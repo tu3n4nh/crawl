@@ -1,6 +1,7 @@
 import argparse
 import requests
 from bs4 import BeautifulSoup
+import warnings
 from urllib.parse import urljoin
 # File
 import io
@@ -15,9 +16,9 @@ headers = {'User-Agent': 'crawl.py'}
 
 def main():
     parser = argparse.ArgumentParser(description="Tool crawl")
-    parser.add_argument("-o", type=str, help="Option to be processed: link, form, ...")
     parser.add_argument("-u", type=str, help="URL you want to crawl")
-    parser.add_argument("-f", type=str, help="Filename output you want to save (txt)")
+    parser.add_argument("-f", type=str, help="File URL you want to crawl")
+    parser.add_argument("-o", type=str, help="Output file you want to save (txt)")
     
     intro = '''                                                                                                    
         @@@@@@@                                        @@                                       
@@ -36,76 +37,107 @@ def main():
         args = parser.parse_args()
         # Check arg url
         if args.u:
-            # Check arg option
-            if args.o:
-                # Get option link
-                if args.o == "link":
-                    links = get_links(args.u)
-                    if links:
-                        text = f"List links of target: {args.u}" + "\n"
-                        print(f"List links of target: {args.u}")
-                        for link in links:
-                            text = text + f"Link: {link}" + "\n"
-                            print(f"{Fore.GREEN}Link: {Fore.RESET}{Fore.BLUE}{link}{Fore.RESET}")
-                        text = text + f"Total links: {len(links)}" + "\n"
-                        print(f"{Fore.GREEN}Total links: {Fore.RESET}{Fore.BLUE}{len(links)}{Fore.RESET}")
-                        
-                        if args.f:
-                            # Open the file in write mode
-                            with io.open(f'{args.f}.txt', 'w', encoding="utf-8") as file:
-                                file.write(text)
-
-                            print(f"File saved to {args.f}")
-                        else:
-                            print("Usage: python crawl.py -u <target_url> -o <option_crawl> -f <file_name>")
-                            return
-                
-                # Get option form
-                elif args.o == "form":
-                    form_elements = get_form(args.u)
-                    if form_elements:
-                        index = 1
-                        text = f"List form of target: {args.u}" + "\n"
-                        print(f"List form of target: {args.u}")
-                        for form_element in form_elements:
-                            form_html = form_element.prettify()
-                            text = text + f"\nForm {index}:\n" + form_html + "\n"
-                            highlighted_html = highlight(form_html, HtmlLexer(), TerminalFormatter())
-                            print(f"{Fore.GREEN}Form {index}:{Fore.RESET}")
-                            print(highlighted_html)
-                            index = index + 1
-                        text = text + f"Total forms: {len(form_elements)}" + "\n"
-                        print(f"{Fore.GREEN}Total forms: {Fore.RESET}{Fore.BLUE}{len(form_elements)}{Fore.RESET}")
-
-                        if args.f:
-                            # Open the file in write mode
-                            with io.open(f'{args.f}.txt', 'w', encoding="utf-8") as file:
-                                file.write(text)
-
-                            print(f"File saved to {args.f}")
-                        else:
-                            print("Usage: python crawl.py -u <target_url> -o <option_crawl> -f <file_name>")
-                            return
-
-                else:
-                    print("Option: -o <option_crawl> must be: link, form, ...")     
+            text = ""
+            links = get_links(args.u)
+            if links:
+                print(f"List links of target: {args.u}")
+                for link in links:
+                    text = text + f"{link}" + "\n"
+                    print(f"{Fore.GREEN}Link: {Fore.RESET}{Fore.BLUE}{link}{Fore.RESET}")
+                print(f"{Fore.GREEN}Total links: {Fore.RESET}{Fore.BLUE}{len(links)}{Fore.RESET}")
+            
+                # Check arg output file
+                if args.o:
+                    # Open the file in write mode
+                    with io.open(f'{args.o}', 'w', encoding="utf-8") as file:
+                        file.write(text)
+                    print(f"File saved: {args.o}")
             else:
-                print("Usage: python crawl.py -u <target_url> -o <option_crawl>")
+                print("Usage: python crawl.py -u <target_url>")
+                return
+
+        # Check arg list
+        elif args.f:
+            with io.open(f'{args.f}', 'r', encoding="utf-8") as file:
+                text = ""
+                for line in file:
+                    line = line.strip()
+                    links = get_links(line)
+                    if links:
+                        print(f"{Fore.GREEN}List links of target: {Fore.RESET}{Fore.BLUE}{line}{Fore.RESET}")
+                        for link in links:
+                            text = text + f"{link}" + "\n"
+                            print(f"{Fore.GREEN}Link: {Fore.RESET}{Fore.BLUE}{link}{Fore.RESET}")
+                        print(f"{Fore.GREEN}Total links: {Fore.RESET}{Fore.BLUE}{len(links)}{Fore.RESET}")
+                    else:
+                        continue
+                if args.o:
+                    # Open the file in write mode
+                    array = text.splitlines()
+                    uniqueLinks = filter_unique_links(array)
+                    listLinks = "\n".join(uniqueLinks)
+                    with io.open(f'{args.o}', 'w', encoding="utf-8") as file:
+                        file.write(listLinks)
+                    print(f"File saved: {args.o}")
+                    # # Check arg option
+                    # if args.o:
+                    #     # Get option link
+                    #     if args.o == "link":
+                    #         links = get_links(line)
+                    #         if links:
+                    #             print(f"{Fore.GREEN}List links of target: {Fore.RESET}{Fore.BLUE}{line}{Fore.RESET}")
+                    #             for link in links:
+                    #                 text = text + f"{link}" + "\n"
+                    #                 print(f"{Fore.GREEN}Link: {Fore.RESET}{Fore.BLUE}{link}{Fore.RESET}")
+                    #             print(f"{Fore.GREEN}Total links: {Fore.RESET}{Fore.BLUE}{len(links)}{Fore.RESET}")
+                                
+                    #     # Get option form   
+                    #     elif args.o == "form":
+                    #         form_elements = get_form(args.u)
+                    #         if form_elements:
+                    #             index = 1
+                    #             text = f"List form of target: {args.u}" + "\n"
+                    #             print(f"List form of target: {args.u}")
+                    #             for form_element in form_elements:
+                    #                 form_html = form_element.prettify()
+                    #                 text = text + f"\nForm {index}:\n" + form_html + "\n"
+                    #                 highlighted_html = highlight(form_html, HtmlLexer(), TerminalFormatter())
+                    #                 print(f"{Fore.GREEN}Form {index}:{Fore.RESET}")
+                    #                 print(highlighted_html)
+                    #                 index = index + 1
+                    #             text = text + f"Total forms: {len(form_elements)}" + "\n"
+                    #             print(f"{Fore.GREEN}Total forms: {Fore.RESET}{Fore.BLUE}{len(form_elements)}{Fore.RESET}")
+
+                                
+                    #     # Get option response
+                    #     elif args.o == "response":
+                    #         response = get_response(args.u)
+                    #         if response:
+                    #             print(response.headers)
+
+                    #     else:
+                    #         print("Option: -o <option_crawl> must be: link, form, response, ...")     
         else:
-            print("Usage: python crawl.py -u <target_url> -o <option_crawl>")
+            print("Usage: python crawl.py -h")
+
     except SystemExit:
         print("Usage: python crawl.py -h")
 
 
 # Process option link
 def get_links(url):
-    response = requests.get(url, headers=headers)
-
+    try:
+        response = requests.get(url, headers=headers, verify=False)
+    except Exception:
+        return None
+    
     # Parse the HTML using BeautifulSoup
+    warnings.filterwarnings("ignore")
     soup = BeautifulSoup(response.text, 'html.parser')
+
     links = []
     relative_links = []
-    link_elements = soup.find_all(['a', 'img', 'script', 'link', 'area', 'form', 'frame', 'iframe', 'object', 'embed'])
+    link_elements = soup.find_all(['a', 'img', 'script', 'link', 'area', 'form', 'frame', 'iframe', 'object', 'embed', 'source', 'base'])
     
     if link_elements:
         for element in link_elements:
@@ -117,14 +149,12 @@ def get_links(url):
                     relative_links.append(href)
                     full_links = [urljoin(url, relative_link) for relative_link in relative_links]
                     links = links + full_links
-
     else:
-        return ["This site does not contain links!"]
+        return None
     
     # Filter duplicate links
     unique_links = filter_unique_links(links)
     return unique_links
-
 
 # Process duplicate links
 def filter_unique_links(links):
@@ -134,7 +164,6 @@ def filter_unique_links(links):
         unique_links.add(link)
 
     return list(unique_links)
-
 
 # Process option form
 def get_form(url):
@@ -151,7 +180,11 @@ def get_form(url):
         print("This site does not contain forms!")
         return
 
-
+# Process option response
+def get_response(url):
+    response = requests.get(url, headers=headers)
+    print(response.text)
+    return response
 
 if __name__ == "__main__":
     main()
