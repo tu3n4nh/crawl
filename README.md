@@ -14,7 +14,7 @@ For SERVER-SIDE RENDERING
 usage: crawl.py [-h help] [-u url] [-f file] [-o output] [-r raw]
 
 For CLIENT-SIDE RENDERING
-usage: crawl.py [-h help] [-u url] [-f file] [-o output] [-r raw]
+usage: crawlPlus.py [-h help] [-u url] [-f file] [-o output] [-r raw]
 
 Tool crawl
 
