@@ -9,10 +9,7 @@ from urllib.parse import urljoin
 # File
 import io
 # Color
-from pygments import highlight
-from pygments.lexers import HtmlLexer
-from pygments.formatters import TerminalFormatter
-from colorama import init, Fore, Style
+from colorama import init, Fore
 # Initialize colorama for Windows terminal color support
 init()
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36'}
