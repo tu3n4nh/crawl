@@ -15,7 +15,7 @@ from pygments.formatters import TerminalFormatter
 from colorama import init, Fore, Style
 # Initialize colorama for Windows terminal color support
 init()
-headers = {'User-Agent': 'crawl.py'}
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36'}
 
 def main():
     parser = argparse.ArgumentParser(description="Tool crawl")
@@ -58,7 +58,7 @@ def main():
                 else:
                     for link in sortedLinks:
                         print(f"{Fore.GREEN}Link: {Fore.RESET}{Fore.BLUE}{link}{Fore.RESET}")
-                    print(f"{Fore.GREEN}Total links of {Fore.RESET}{Fore.BLUE}{args.u}: {Fore.RESET}{Fore.GREEN}{len(links)}{Fore.RESET}")
+                    print(f"{Fore.GREEN}Total links of {Fore.RESET}: {Fore.GREEN}{len(links)}{Fore.RESET}")
             
                 # Check arg output file
                 if args.o:

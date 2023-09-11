@@ -128,40 +128,64 @@ def getLinks(url):
     links = ''
     aTags = driver.find_elements(By.TAG_NAME, "a")
     for aTag in aTags:
-        links = links + aTag.get_attribute("href") + '\n'
+        link = aTag.get_attribute("href")
+        if link:
+            links = links + link + '\n'
     imgTags = driver.find_elements(By.TAG_NAME, "img")
     for imgTag in imgTags:
-        links = links + imgTag.get_attribute("src") + '\n'
+        link = imgTag.get_attribute("src")
+        if link:
+            links = links + link + '\n'
     scriptTags = driver.find_elements(By.TAG_NAME, "script")
     for scriptTag in scriptTags:
-        links = links + scriptTag.get_attribute("src") + '\n'
+        link = scriptTag.get_attribute("src")
+        if link:
+            links = links + link + '\n'
     linkTags = driver.find_elements(By.TAG_NAME, "link")
     for linkTag in linkTags:
-        links = links + linkTag.get_attribute("href") + '\n'
+        link = linkTag.get_attribute("href")
+        if link:
+            links = links + link + '\n'
     areaTags = driver.find_elements(By.TAG_NAME, "area")
     for areaTag in areaTags:
-        links = links + areaTag.get_attribute("src") + '\n'
+        link = areaTag.get_attribute("src")
+        if link:
+            links = links + link + '\n'
     fromTags = driver.find_elements(By.TAG_NAME, "from")
     for fromTag in fromTags:
-        links = links + fromTag.get_attribute("action") + '\n'
+        link = fromTag.get_attribute("action")
+        if link:
+            links = links + link + '\n'
     frameTags = driver.find_elements(By.TAG_NAME, "frame")
     for frameTag in frameTags:
-        links = links + frameTag.get_attribute("src") + '\n'
+        link = frameTag.get_attribute("src")
+        if link:
+            links = links + link + '\n'
     iframeTags = driver.find_elements(By.TAG_NAME, "iframe")
     for iframeTag in iframeTags:
-        links = links + iframeTag.get_attribute("src") + '\n'
+        link = iframeTag.get_attribute("src")
+        if link:
+            links = links + link + '\n'
     objectTags = driver.find_elements(By.TAG_NAME, "object")
     for objectTag in objectTags:
-        links = links + objectTag.get_attribute("data") + '\n'
+        link = objectTag.get_attribute("data")
+        if link:
+            links = links + link + '\n'
     embedTags = driver.find_elements(By.TAG_NAME, "embed")
     for embedTag in embedTags:
-        links = links + embedTag.get_attribute("src") + '\n'
+        link = embedTag.get_attribute("src")
+        if link:
+            links = links + link + '\n'
     sourceTags = driver.find_elements(By.TAG_NAME, "source")
     for sourceTag in sourceTags:
-        links = links + sourceTag.get_attribute("src") + '\n'
+        link = sourceTag.get_attribute("src")
+        if link:
+            links = links + link + '\n'
     baseTags = driver.find_elements(By.TAG_NAME, "base")
     for baseTag in baseTags:
-        links = links + baseTag.get_attribute("href") + '\n'
+        link = baseTag.get_attribute("href")
+        if link:
+            links = links + link + '\n'
 
     # Link beautifier
     arrLinks = links.splitlines()
